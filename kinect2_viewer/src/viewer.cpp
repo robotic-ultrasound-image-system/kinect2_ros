@@ -324,7 +324,7 @@ private:
     visualizer->initCameraParameters();
     visualizer->setBackgroundColor(0, 0, 0);
     visualizer->setPosition(mode == BOTH ? color.cols : 0, 0);
-    visualizer->setSize(color.cols, color.rows);
+    visualizer->setSize(color.cols, color.rows);//尺寸大小
     visualizer->setShowFPS(true);
     visualizer->setCameraPosition(0, 0, 0, 0, -1, 0);
     visualizer->registerKeyboardCallback(&Receiver::keyboardEvent, *this);
@@ -339,9 +339,9 @@ private:
         updateCloud = false;
         lock.unlock();
 
-        createCloud(depth, color, cloud);
+       createCloud(depth, color, cloud);
 
-        visualizer->updatePointCloud(cloud, cloudName);
+       visualizer->updatePointCloud(cloud, cloudName);//刷新
       }
       if(save)
       {
@@ -350,7 +350,8 @@ private:
         dispDepth(depth, depthDisp, 12000.0f);
         saveCloudAndImages(cloud, color, depth, depthDisp);
       }
-      visualizer->spinOnce(10);
+      visualizer->spinOnce(10);//可视化
+
     }
     visualizer->close();
   }
