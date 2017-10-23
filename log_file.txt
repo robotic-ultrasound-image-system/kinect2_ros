@@ -178,7 +178,15 @@ cd catkin_ws/devel/lib/kinect2_segment
 
 github教程：https://www.liaoxuefeng.com/wiki/
 
-github项目提交失败 master -> master (non-fast-forward)
+github项目提交失败 master -> master (non-fast-forward):先执行git pull
+然后再执行 git push --force origin master 替换原先的git push -u origin master
+
+$cd catkin_ws/src/iai_kinect2
+$git add --all
+$git commit -m "2017/10/23"
+$git push origin master
+
+
 
 
 
