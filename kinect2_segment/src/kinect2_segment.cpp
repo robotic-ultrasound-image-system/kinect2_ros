@@ -26,6 +26,12 @@
 #include <thread>
 #include <chrono>
 #include <atomic>
+#include <Eigen/Eigen>  
+#include <stdlib.h>  
+#include <Eigen/Geometry>  
+#include <Eigen/Core>  
+#include <vector>  
+#include <math.h>  
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -61,7 +67,8 @@
 
 //using namespace std;
 //using namespace cv;
-
+ using namespace Eigen; 
+ 
  std::mutex lock;
 //
   std::atomic_int mouseX;
@@ -532,6 +539,23 @@ void regionGrowing1(const cv::Mat &depth, const cv::Mat &color, pcl::PointCloud<
     visualizer->close();
   } 
 
+Eigen::Quaterniond euler2Quaternion( const double roll,const double pitch, const double yaw) const 
+{  
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());  
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());  
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());  
+  
+    Eigen::Quaterniond q = rollAngle * yawAngle * pitchAngle;  
+    /*cout << "Euler2Quaternion result is:" <<endl;  
+    cout << "x = " << q.x() <<endl;  
+    cout << "y = " << q.y() <<endl;  
+    cout << "z = " << q.z() <<endl;  
+    cout << "w = " << q.w() <<endl<<endl;*/
+    return q;  
+}  
+
+
+
 void regionGrowingNeck(const cv::Mat &depth, const cv::Mat &color, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pcloud, int mouse_x, int mouse_y) const
 {
 		//result
@@ -624,13 +648,13 @@ void regionGrowingNeck(const cv::Mat &depth, const cv::Mat &color, pcl::PointClo
              float normal_y = normals->points[mouse_y * depth_res.cols + m].data_n[1];
              float normal_z = normals->points[mouse_y * depth_res.cols + m].data_n[2];
              float normal = sqrt(normal_x * normal_x  + normal_y * normal_y + normal_z * normal_z);
-             float cos_a = normal_x/normal;
-             float cos_b = normal_y/normal;
-             float cos_c = normal_z/normal;
-             float a = acos(cos_a);
-             float b = acos(cos_b);
-             float c = acos(cos_c);
-             float s1 = sin(a/2);
+             double cos_a = normal_x/normal;
+             double cos_b = normal_y/normal;
+             double cos_c = normal_z/normal;
+             double a = acos(cos_a);
+             double b = acos(cos_b);
+             double c = acos(cos_c);
+             /*float s1 = sin(a/2);
              float s2 = sin(b/2);
              float s3 = sin(c/2);
              float c1 = cos(a/2);
@@ -639,21 +663,20 @@ void regionGrowingNeck(const cv::Mat &depth, const cv::Mat &color, pcl::PointClo
              float orientation_x = s2*s3*c1 + c2*c3*s1;
              float orientation_y = s2*c3*c1 + c2*s3*s1;
              float orientation_z = c2*s3*c1 + s2*c3*s1;
-             float orientation_w = c2*c3*c1 + s2*s3*s1;
+             float orientation_w = c2*c3*c1 + s2*s3*s1;*/
+             Eigen::Quaterniond q = euler2Quaternion(c,a,b);
              poseMsg.pose.position.x = pt_Msg.x;
              poseMsg.pose.position.y = pt_Msg.y;
              poseMsg.pose.position.z = pt_Msg.z;  
-             poseMsg.pose.orientation.x = orientation_x;
+             /*poseMsg.pose.orientation.x = orientation_x;
              poseMsg.pose.orientation.y = orientation_y;
              poseMsg.pose.orientation.z = orientation_z;
-             poseMsg.pose.orientation.w = orientation_w;
-             /*std::cout << "normal_x: " << normal_x << std::endl;
-             std::cout << "normal_y: " << normal_y << std::endl;
-             std::cout << "normal_z: " << normal_z << std::endl;
-             std::cout << "normal: " << normal << std::endl;
-             std::cout << "cos_a: " << cos_a << std::endl;
-             std::cout << "a: " << a << std::endl;
-             std::cout << orientation_x << std::endl;*/
+             poseMsg.pose.orientation.w = orientation_w;*/
+             poseMsg.pose.orientation.x = q.x();
+             poseMsg.pose.orientation.y = q.y();
+             poseMsg.pose.orientation.z = q.z();
+             poseMsg.pose.orientation.w = q.w();
+             
 
              poseMsg.header.stamp = ros::Time::now();            
              pcl_pub.publish(poseMsg); 
