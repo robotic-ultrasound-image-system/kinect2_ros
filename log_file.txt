@@ -1,0 +1,204 @@
+################################### 日志文件##############################
+################################### 十分重要##############################
+there is something wrong.
+this package is not support with anything over 1.9.x.
+since the ur_driver is, AFAIK, not compatible with UR v3.X.
+but do not delete this folder.
+
+https://github.com/ros-industrial/universal_robot
+
+
+**************************************JuanZhang 2017.09.09********************
+
+net account number:211499,password:066019
+
+set up a new accout:wendell,password:@628jzhang
+
+install ROS Kinetic 
+
+install libfreenect2 https://github.com/OpenKinect/libfreenect2
+
+install iai_kinect2  https://github.com/code-iai/iai_kinect2
+
+*********error*********
+
+error: exception handling disabled, use -fexceptions to enable
+         throw FLANNException("Invalid index file, cannot read");
+
+solution: This happens in the kinect registration package. However, when I added the following line to the kinect_registration CMakeLists.txt, it works
+
+add_definitions( -fexceptions )
+
+***********************
+
+
+
+
+
+**************************************JuanZhang 2017.09.11********************
+
+#############
+
+build a new file:home/wendell/catkin_ws/src/kinect2_click 
+
+terminal:cd catkin_ws
+catkin_make
+
+*********error**************
+
+error: Multiple packages found with the same name 
+
+solution: not solve
+
+*****************************
+
+build a new woekspace:catkin_zj
+
+/catkin_zj/src/kinect2_click.cpp:#include <atomic>
+
+http://blog.csdn.net/sunbibei/article/details/51594824
+
+**********error**********
+
+error: invalid use of non-static member function
+       cv::setMouseCallback(window_name, onMouse, nullptr);
+
+solution:catkin_zj/src/kinect2_click/kinect2_viewer_click/CMakeList.txt
+
+           add_executable(kinect2_viewer_click src/viewer.cpp)
+                    target_link_libraries(kinect2_viewer_click
+           ${catkin_LIBRARIES}
+           ${OpenCV_LIBRARIES}
+           ${PCL_LIBRARIES}
+  	   ${kinect2_bridge_LIBRARIES}
+	   )
+
+	   install(TARGETS kinect2_viewer_click
+ 	   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+	   )
+solution://global
+  std::atomic_int mouseX;
+  std::atomic_int mouseY;
+  std::atomic_int mouseBtnType;
+
+  void onMouse(int event, int x, int y, int flags, void* ustc) 
+  {
+    // std::cout << "onMouse: " << x << " " << y << std::endl;
+    mouseX  = x;
+    mouseY  = y;
+    mouseBtnType = event;
+   }
+
+****************************
+
+fail,because default workspace is catkin_ws
+
+#################################
+
+new a file:catkin_ws/src/iai_kinect2/kinect2_viewer_click
+
+change:catkin_ws/src/iai_kinect2/kinect2_viewer_click/CMakeList.txt
+
+new a terminal:roslaunch kinect2_bridge kinect2_bridge.launch
+
+new a terminal:rosrun kinect2_viewer_click kinect2_viewer_click 
+
+
+
+************************ JuanZhang 2017.09.13 ***************************
+
+#################################
+
+$rostopic
+rostopic is a command-line tool for printing information about ROS Topics.
+
+Commands:
+	rostopic bw	display bandwidth used by topic
+	rostopic delay	display delay of topic from timestamp in header
+	rostopic echo	print messages to screen
+	rostopic find	find topics by type
+	rostopic hz	display publishing rate of topic    
+	rostopic info	print information about active topic
+	rostopic list	list active topics
+	rostopic pub	publish data to topic
+	rostopic type	print topic or field type
+Type rostopic <command> -h for more detailed usage, e.g. 'rostopic echo -h'
+
+rostopic echo /kinect2/click_point/left
+
+#################################
+
+#################################
+
+kinect2_viewer_click.cpp:
+onMouse:std::cout << "onMouse: " << x << " " << y << std::endl;
+
+512*424
+rosrun kinect2_viewer_click kinect2_viewer_click sd cloud
+
+(x,y,z)
+ ptMsg.point.x = img_x;
+ ptMsg.point.y = img_y;
+
+##################################
+
+
+
+
+
+*****************JuanZhang 2017.09.06 ******************
+
+##############
+
+new a file:kinect2_segment(copy)
+
+error:Multiple packages found with the same name "kinect2_viewer_click":
+
+solve: change CMakeList.txt package.xml
+
+**********************************************************
+
+
+*****************JuanZhang 2017.10.16 *********************
+
+rqt_graph查看当前所有nodes
+
+使用gdb调试,可以解决大部分的segmentation fault：http://blog.sina.com.cn/s/blog_602f87700102wjwk.html
+
+catkin_make
+
+cd catkin_ws/devel/lib/kinect2_segment
+
+＄gdb ./kinect2_segment
+
+*************************************************************
+
+
+*************** JuanZhang 2017.10.23 ************************
+
+github教程：https://www.liaoxuefeng.com/wiki/
+
+github项目提交失败 master -> master (non-fast-forward)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
