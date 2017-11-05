@@ -64,6 +64,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Pose.h>
+#include <nav_msgs/Path.h>
 
 //using namespace std;
 //using namespace cv;
@@ -123,6 +124,8 @@ private:
     nh.advertise<geometry_msgs::PointStamped>("/kinect2/click_point/right", 1);
   ros::Publisher pcl_pub =
     nh.advertise<geometry_msgs::PoseStamped>("/kinect2/segment/point_orientation", 1);
+  ros::Publisher pcl_path = 
+    nh.advertise<nav_msgs::Path>("/kinect2/path_navigation", 1);
 
 //
 
@@ -605,6 +608,9 @@ void regionGrowingNeck(const cv::Mat &depth, const cv::Mat &color, pcl::PointClo
                        
                  }
     createCloud(depth_res, color, pcloud_res);
+
+    nav_msgs::Path pathMsg;
+    pathMsg.header.frame_id = "kinect2_link";
     
     geometry_msgs::PoseStamped poseMsg;
     poseMsg.header.frame_id = "kinect2_link";
@@ -676,10 +682,14 @@ void regionGrowingNeck(const cv::Mat &depth, const cv::Mat &color, pcl::PointClo
              poseMsg.pose.orientation.y = q.y();
              poseMsg.pose.orientation.z = q.z();
              poseMsg.pose.orientation.w = q.w();
+             float mn = q.x()*q.x()+q.y()*q.y()+q.z()*q.z()+q.w()*q.w();
+             std::cout << "mn: " << mn << std::endl;
              
 
-             poseMsg.header.stamp = ros::Time::now();            
-             pcl_pub.publish(poseMsg); 
+             poseMsg.header.stamp = ros::Time::now(); 
+             pathMsg.poses.push_back(poseMsg); 
+          
+             pcl_path.publish(pathMsg); 
              ros::spinOnce();           
              }                  
     }

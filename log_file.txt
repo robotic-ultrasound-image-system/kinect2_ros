@@ -186,6 +186,14 @@ $git add --all
 $git commit -m "2017/10/23"
 $git push origin master
 
+*****************************************************************************
+
+
+******************** JuanZhang 2017.10.25 ***********************************
+
+一个点位置到达：$roslaunch ur_modern_driver ur5visio.launch
+$rosrun ur_modern_driver testvisio.py
+
 
 
 
